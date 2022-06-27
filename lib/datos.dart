@@ -12,12 +12,18 @@ class Datos extends ChangeNotifier {
   File firma = File('');
   File excel = File('');
   String? dirSalida;
-  bool cargado = false;
+  bool cargadoHome = false;
+  bool cargadoSep = false;
   String html = '';
   String nombre = '';
   String cargo = '';
   String telefono = '';
   String email = '';
+
+  String nombreSep = '';
+  String cargoSep = '';
+  String telefonoSep = '';
+  String emailSep = '';
   List<Empleado> listaEmpleados = [];
 
   void _readHtml() {
@@ -30,13 +36,27 @@ class Datos extends ChangeNotifier {
   Future<void> cargarPreferencias() async {
     firma = File(await Preferences.getPath('firma'));
     dirSalida = await Preferences.getPath('dirSalida');
+    nombreSep = await Preferences.getPath('nombreSep');
+    cargoSep = await Preferences.getPath('cargoSep');
+    emailSep = await Preferences.getPath('emailSep');
+    telefonoSep = await Preferences.getPath('telefonoSep');
     notifyListeners();
   }
 
-  void _crearFirma() {
+  void _crearFirma() async {
     File editado = File('$dirSalida\\$nombre.html');
+    await cargarPreferencias();
+    if (nombre != '') {
+      nombre = '$nombre$nombreSep';
+    }
+    if (cargo != '') {
+      cargo = '$cargo$cargoSep';
+    }
+    if (email != '') {
+      email = '$email$emailSep';
+    }
     if (telefono != '') {
-      telefono = '$telefono | ';
+      telefono = '$telefono$telefonoSep';
     }
     html = html
         .replaceFirst('@nombre', nombre)
@@ -136,5 +156,12 @@ class Datos extends ChangeNotifier {
       notifyListeners();
       leerExcel(context);
     }
+  }
+
+  void guardarSeparadores() async {
+    await Preferences.setPath('nombreSep', nombreSep);
+    await Preferences.setPath('cargoSep', cargoSep);
+    await Preferences.setPath('emailSep', emailSep);
+    await Preferences.setPath('telefonoSep', telefonoSep);
   }
 }

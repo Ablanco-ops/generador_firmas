@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:generador_firmas/datos.dart';
+import 'package:generador_firmas/separador_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'home.dart';
@@ -23,6 +24,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       home: const Home(),
+      routes: {
+        SeparadorScreen.routeName: (context)=> const SeparadorScreen()
+      },
     );
   }
 }

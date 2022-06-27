@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:generador_firmas/separador_screen.dart';
 import 'package:provider/provider.dart';
 
+import 'common.dart';
 import 'datos.dart';
 
 class Home extends StatelessWidget {
@@ -10,9 +12,9 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<Datos>(context);
     final display = MediaQuery.of(context).size;
-    if (!provider.cargado) {
+    if (!provider.cargadoHome) {
       provider.cargarPreferencias();
-      provider.cargado = true;
+      provider.cargadoHome = true;
     }
 
     return Scaffold(
@@ -38,6 +40,14 @@ class Home extends StatelessWidget {
             trailing: IconButton(
               icon: const Icon(Icons.edit),
               onPressed: provider.seleccionarSalida,
+            ),
+          ),
+          ListTile(
+            title: const Text('Separadores'),
+            trailing: IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(SeparadorScreen.routeName),
             ),
           ),
         ]),
@@ -115,35 +125,6 @@ class Home extends StatelessWidget {
             // SingleChildScrollView(child: Html(data: provider.html)),
           ]),
         ),
-      ),
-    );
-  }
-}
-
-class FormWidget extends StatelessWidget {
-  const FormWidget(
-      {Key? key,
-      required this.display,
-      required this.titulo,
-      required this.campo})
-      : super(key: key);
-
-  final Size display;
-  final TextFormField campo;
-  final String titulo;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          SizedBox(width: display.width * 0.1, child: Text(titulo)),
-          SizedBox(
-            width: display.width * 0.3,
-            child: campo,
-          ),
-        ],
       ),
     );
   }
