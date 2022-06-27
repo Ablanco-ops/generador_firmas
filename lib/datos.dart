@@ -23,56 +23,64 @@ class Datos extends ChangeNotifier {
   void _readHtml() {
     final doc = parser.parse(firma.readAsBytesSync());
     html = doc.outerHtml;
-    if (kDebugMode) {
-      print(html);
-    }
+
     notifyListeners();
   }
 
-  void cargarPreferencias() async {
+  Future<void> cargarPreferencias() async {
     firma = File(await Preferences.getPath('firma'));
-    dirSalida = await Preferences.getPath('firma');
+    dirSalida = await Preferences.getPath('dirSalida');
+    notifyListeners();
   }
 
-  void _crearFirma(String nombre, String cargo, String email, String telefono) {
+  void _crearFirma() {
     File editado = File('$dirSalida\\$nombre.html');
+    if (telefono != '') {
+      telefono = '$telefono | ';
+    }
     html = html
-        .replaceAll('@nombre', nombre)
-        .replaceAll('@cargo', cargo)
-        .replaceAll('@telefono', telefono)
-        .replaceAll('@correo', email);
+        .replaceFirst('@nombre', nombre)
+        .replaceFirst('@cargo', cargo)
+        .replaceFirst('@telefono', telefono)
+        .replaceAll('@email', email);
+
     editado.writeAsString(html);
+    _readHtml();
   }
 
   void leerExcel(BuildContext context) {
     var bytes;
-    try{
+    try {
       bytes = excel.readAsBytesSync();
-      
-    }
-    catch (e){
+    } catch (e) {
       customSnack('Error al leer Excel', context);
     }
-    if (bytes !=null){
+    if (bytes != null) {
       Excel archivo = Excel.decodeBytes(bytes);
-    Sheet hoja = archivo[archivo.getDefaultSheet()!];
-    listaEmpleados.clear();
-    for (int i = 1; i <= hoja.maxRows; i++) {
-      if (hoja.cell(CellIndex.indexByString("C$i")).value.contains('@')) {
-        listaEmpleados.add(Empleado(
-            nombre: hoja.cell(CellIndex.indexByString("A$i")).value,
-            cargo: hoja.cell(CellIndex.indexByString("B$i")).value,
-            email: hoja.cell(CellIndex.indexByString("C$i")).value,
-            telefono:
-                hoja.cell(CellIndex.indexByString("D$i")).value.toString()));
+      Sheet hoja = archivo[archivo.getDefaultSheet()!];
+      listaEmpleados.clear();
+      for (int i = 1; i <= hoja.maxRows; i++) {
+        if (hoja.cell(CellIndex.indexByString("C$i")).value.contains('@')) {
+          String tfno;
+          if (hoja.cell(CellIndex.indexByString("D$i")).value.toString() ==
+              'null') {
+            tfno = '';
+          } else {
+            tfno = hoja.cell(CellIndex.indexByString("D$i")).value.toString();
+          }
+
+          listaEmpleados.add(Empleado(
+              nombre: hoja.cell(CellIndex.indexByString("A$i")).value,
+              cargo: hoja.cell(CellIndex.indexByString("B$i")).value ?? '',
+              email: hoja.cell(CellIndex.indexByString("C$i")).value,
+              telefono: tfno));
+        }
       }
+      if (kDebugMode) {
+        print(listaEmpleados);
+      }
+      notifyListeners();
     }
-    if (kDebugMode) {
-      print(listaEmpleados);
-    }
-    notifyListeners();
-    }
-    
   }
 
   void obtenerFirma(BuildContext context) {
@@ -83,14 +91,19 @@ class Datos extends ChangeNotifier {
     } else {
       _readHtml();
       if (listaEmpleados.isEmpty) {
-        _crearFirma(nombre, cargo, email, telefono);
+        _crearFirma();
       } else {
         for (Empleado empleado in listaEmpleados) {
-          _crearFirma(empleado.nombre, empleado.cargo, empleado.email,
-              empleado.telefono ?? '');
+          nombre = empleado.nombre;
+          cargo = empleado.cargo;
+          email = empleado.email;
+          telefono = empleado.telefono;
+
+          _crearFirma();
         }
       }
     }
+    customSnack('Firmas creadas', context);
   }
 
   Future<void> seleccionarFirma() async {

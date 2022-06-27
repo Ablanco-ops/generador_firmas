@@ -56,28 +56,28 @@ class Home extends StatelessWidget {
                             display: display,
                             titulo: 'Nombre:',
                             campo: TextFormField(
-                              onChanged: (vaue) => provider.nombre = vaue,
+                              onChanged: (value) => provider.nombre = value,
                             ),
                           ),
                           FormWidget(
                             display: display,
                             titulo: 'Cargo:',
                             campo: TextFormField(
-                              onChanged: (vaue) => provider.cargo = vaue,
+                              onChanged: (value) => provider.cargo = value,
                             ),
                           ),
                           FormWidget(
                             display: display,
                             titulo: 'Email:',
                             campo: TextFormField(
-                              onChanged: (vaue) => provider.email = vaue,
+                              onChanged: (value) => provider.email = value,
                             ),
                           ),
                           FormWidget(
                             display: display,
                             titulo: 'Telefono:',
                             campo: TextFormField(
-                              onChanged: (vaue) => provider.telefono = vaue,
+                              onChanged: (value) => provider.telefono = value,
                             ),
                           ),
                         ],
@@ -93,8 +93,7 @@ class Home extends StatelessWidget {
                                   subtitle: Text(
                                       provider.listaEmpleados[index].email),
                                   trailing: Text(
-                                      provider.listaEmpleados[index].telefono ??
-                                          ''),
+                                      provider.listaEmpleados[index].telefono),
                                 )),
                       ),
               ),

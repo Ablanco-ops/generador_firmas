@@ -2,14 +2,16 @@
 class Empleado {
   String nombre;
   String cargo;
-  String? telefono;
+  String telefono;
   String email;
+
 
   Empleado(
       {required this.nombre,
       required this.cargo,
       required this.email,
-      this.telefono});
+      required this.telefono,
+});
 
   @override
   String toString() {
