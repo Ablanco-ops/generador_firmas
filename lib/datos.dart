@@ -25,6 +25,7 @@ class Datos extends ChangeNotifier {
   String telefonoSep = '';
   String emailSep = '';
   List<Empleado> listaEmpleados = [];
+  Map<String, int> listaNombres = {};
 
   void _readHtml() {
     final doc = parser.parse(firma.readAsBytesSync());
@@ -43,9 +44,20 @@ class Datos extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _crearFirma() async {
-    File editado = File('$dirSalida\\$nombre.html');
-    await cargarPreferencias();
+  void _crearFirma() {
+    File editado;
+    if (listaNombres.containsKey(nombre)) {
+      listaNombres[nombre] = listaNombres[nombre]! + 1;
+    } else {
+      listaNombres[nombre] = 0;
+    }
+
+    if (listaNombres[nombre] == 0) {
+      editado = File('$dirSalida\\$nombre.html');
+    } else {
+      editado = File('$dirSalida\\$nombre${listaNombres[nombre]}.html');
+    }
+    cargarPreferencias();
     if (nombre != '') {
       nombre = '$nombre$nombreSep';
     }
@@ -113,6 +125,7 @@ class Datos extends ChangeNotifier {
       if (listaEmpleados.isEmpty) {
         _crearFirma();
       } else {
+        listaNombres.clear();
         for (Empleado empleado in listaEmpleados) {
           nombre = empleado.nombre;
           cargo = empleado.cargo;
